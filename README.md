@@ -203,7 +203,7 @@ In the future, we can add:
 # Contributors
 
 * Ayush Mane
-* Team Members
+
 
 # License
 
