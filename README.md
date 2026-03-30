@@ -1,29 +1,14 @@
-# 🏙️ NagarSathi - Civic Issue Reporting and Resolution System
+# NagarSathi - Civic Issue Reporting and Resolution System
 
-Welcome to NagarSathi!
+This is a web application made to help people report civic problems in their area like potholes, garbage, water leakage, broken street lights, etc.
 
-This project helps people tell the city about problems around them, like:
+The main idea of this project is that if a person sees a problem, they can directly upload a photo and location through the app, and the complaint will reach the correct authority.
 
-* Broken roads 🛣️
-* Garbage on the street 🗑️
-* Water leakage 💧
-* Street lights not working 💡
-* Potholes 🚧
+# Why We Made This
 
-Think of it like a "complaint app" for your city.
-A user clicks a photo, sends the location, and the problem is shown to the correct department.
+Many times people see problems near their home or college, but they do not know where to complain or if anyone will solve it.
 
----
-
-# 🌟 Why We Made This
-
-Sometimes people see a problem near their home, but they do not know:
-
-* Who to tell
-* Where to complain
-* Whether the problem is fixed or not
-
-So we made NagarSathi.
+So we made this project to make the process simple.
 
 With this project, anyone can:
 
@@ -34,9 +19,9 @@ With this project, anyone can:
 
 ---
 
-# 🎯 Main Features
+# Main Features
 
-## For Users
+## User Features
 
 * Login / Sign Up with Google
 * Report an issue
@@ -47,7 +32,7 @@ With this project, anyone can:
 * View all previous complaints
 * Get notifications when issue is solved
 
-## For Admin / Government Officer
+## Admin Features
 
 * View all reported issues
 * Filter issues by type and location
@@ -57,23 +42,15 @@ With this project, anyone can:
 
 ---
 
-# 🧒 Simple Example
+# Example
 
-Imagine you are walking to school and see a big pothole.
+Suppose there is a pothole near your road.
 
-You open NagarSathi.
+You open the app, login with Google, upload a photo of the pothole, select the location from the map and submit it.
 
-1. Click "Report Issue"
-2. Take a photo of the pothole
-3. Select "Road Problem"
-4. Tap your location on the map
-5. Press Submit
+After that, the admin can see the complaint and update its status.
 
-Now the city office can see it and fix it.
-
----
-
-# 🛠️ Technologies Used
+# Technologies Used
 
 | Part           | Technology                         |
 | -------------- | ---------------------------------- |
@@ -87,7 +64,7 @@ Now the city office can see it and fix it.
 
 ---
 
-# 🗂️ Project Structure
+# Project Structure
 
 ```text
 NagarSathi/
@@ -112,7 +89,7 @@ NagarSathi/
 
 ---
 
-# 🚀 How To Run This Project
+# How to Run the Project
 
 ## 1. Clone the Project
 
@@ -153,7 +130,7 @@ http://localhost:5000
 
 ---
 
-# 🔐 Environment Variables
+# Environment Variables
 
 Create a `.env` file inside backend folder.
 
@@ -168,7 +145,7 @@ CLOUDINARY_URL=your_cloudinary_url
 
 ---
 
-# 📸 Screens in the Project
+# Pages in the Project
 
 * Home Page
 * Login Page
@@ -181,7 +158,7 @@ CLOUDINARY_URL=your_cloudinary_url
 
 ---
 
-# 📊 Complaint Status
+# Complaint Status
 
 Each complaint can have one of these statuses:
 
@@ -193,7 +170,7 @@ Each complaint can have one of these statuses:
 
 ---
 
-# 🔄 Flow of the Project
+# Project Flow
 
 ```text
 User sees a problem
@@ -211,7 +188,7 @@ User gets update
 
 ---
 
-# 🧠 Future Improvements
+# Future Improvements
 
 In the future, we can add:
 
@@ -223,21 +200,15 @@ In the future, we can add:
 
 ---
 
-# 🤝 Contributors
-
-Made with hard work and chai ☕ by:
+# Contributors
 
 * Ayush Mane
 * Team Members
 
----
-
-# 📜 License
+# License
 
 This project is free to use for learning and college projects.
 
 ---
 
-# ❤️ Final Line
-
-"Small reports can make a big city better."
+This project was made for learning and for solving real city problems in an easy way.
