@@ -6,7 +6,112 @@ The main idea of this project is that if a person sees a problem, they can direc
 
 Why We Made This
 
-Many times people see problems near their home or college, but they do not know where to complain or if anyone will solve it.
+Many times people see problems near theirNagarSathi - Civic Issue Reporting System
+
+NagarSathi is a web application that helps people report civic issues like potholes, garbage, water leakage, and broken street lights.
+
+Users can upload a photo, add location, and send the complaint directly to the concerned authority.
+
+Why This Project?
+
+Many people see problems around them but don’t know where to report them.
+
+This project makes it simple:
+
+Report issues in seconds
+Track complaint status
+Get updates when resolved
+Features
+For Users
+Login / Sign up with Google
+Report an issue with image
+Add location using map
+Select issue type
+Track complaint status
+View previous complaints
+Get notifications
+For Admin
+View all issues
+Filter by type and location
+Update status (Pending → In Progress → Resolved)
+Assign issues to departments
+How It Works
+1. User sees a problem  
+2. Uploads photo & location  
+3. Issue is stored in database  
+4. Admin reviews the issue  
+5. Status is updated  
+6. User gets notification  
+Technologies Used
+Frontend: React.js, HTML, CSS, JavaScript
+Backend: Node.js, Express.js
+Database: MySQL
+ORM: Sequelize
+Authentication: Google OAuth + JWT
+Maps: Google Maps API / Leaflet
+Image Upload: Cloudinary
+Database (Simple Overview)
+
+The project uses MySQL with these main tables:
+
+Users → stores user details
+Issues → stores all complaints
+Departments → handles issue categories
+Issue History → tracks status updates
+Notifications → informs users
+Project Structure
+NagarSathi/
+│
+├── frontend/
+├── backend/
+│   ├── config/      (MySQL connection)
+│   ├── models/      (Sequelize models)
+│   ├── routes/
+│   └── controllers/
+│
+├── README.md
+How to Run
+1. Clone project
+git clone https://github.com/your-username/nagarsathi.git
+cd nagarsathi
+2. Start frontend
+cd frontend
+npm install
+npm start
+3. Start backend
+cd backend
+npm install
+npm run dev
+Environment Variables
+
+Create .env file in backend:
+
+PORT=5000
+
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=nagarsathi
+
+JWT_SECRET=your_secret
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_secret
+Status Types
+Pending → Issue reported
+In Progress → Work started
+Resolved → Issue fixed
+Future Improvements
+AI to detect issue from image
+Multi-language support
+Voice-based complaint
+Reward system for users
+Author
+
+Ayush Mane
+
+License
+
+Free for learning and college use home or college, but they do not know where to complain or if anyone will solve it.
 
 So we made this project to make the process simple.
 
