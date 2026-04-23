@@ -177,7 +177,7 @@ NagarSathi/
 └── package.json
 How to Run the Project
 1. Clone the Project
-git clone https://github.com/your-username/nagarsathi.git
+git clone https://github.com/Ayushmane009/civic-issue-system
 cd nagarsathi
 2. Install Frontend
 cd frontend
