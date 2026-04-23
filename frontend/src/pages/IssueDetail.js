@@ -5,7 +5,7 @@ import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import {
   ArrowLeft, MapPin, Clock, User, Send,
-  MessageCircle, Image, Calendar, Tag, Trash2
+  MessageCircle, Image, Calendar, Tag, Trash2, ThumbsUp
 } from 'lucide-react';
 
 const IssueDetail = () => {
@@ -19,15 +19,30 @@ const IssueDetail = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [isUpvoted, setIsUpvoted] = useState(false);
 
   useEffect(() => {
     fetchIssue();
-  }, [id]);
+    fetchUpvoteStatus();
+  }, [id, user, token]);
+
+  const fetchUpvoteStatus = async () => {
+    if (!user) return;
+    try {
+      const res = await axios.get('http://localhost:5000/api/users/upvotes', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setIsUpvoted(res.data.includes(parseInt(id)));
+    } catch (err) {
+      console.error('Failed to load upvotes', err);
+    }
+  };
 
   const fetchIssue = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/api/issues/${id}`);
       setIssue(res.data);
+      setComments(res.data.comments || []);
     } catch (err) {
       console.error('Error fetching issue:', err);
     } finally {
@@ -87,6 +102,25 @@ const IssueDetail = () => {
       addToast(err.response?.data?.message || 'Failed to update status', 'error');
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  const handleUpvote = async () => {
+    if (!user) return;
+    try {
+      const res = await axios.post(`http://localhost:5000/api/issues/${id}/upvote`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const newUpvotedState = res.data.upvoted;
+      setIsUpvoted(newUpvotedState);
+      
+      setIssue(prev => ({
+        ...prev,
+        upvotes_count: (prev.upvotes_count || 0) + (newUpvotedState ? 1 : -1)
+      }));
+    } catch (err) {
+      addToast('Failed to toggle upvote', 'error');
     }
   };
 
@@ -235,6 +269,25 @@ const IssueDetail = () => {
                 })}
               </div>
             )}
+            
+            {/* Upvote Button */}
+            <button 
+              onClick={handleUpvote}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                background: isUpvoted ? 'rgba(var(--primary-rgb), 0.1)' : 'rgba(255,255,255,0.05)',
+                border: `1px solid ${isUpvoted ? 'var(--primary)' : 'var(--glass-border)'}`,
+                color: isUpvoted ? 'var(--primary)' : 'var(--gray-light)',
+                cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600,
+                padding: '6px 12px', borderRadius: 'var(--radius-md)',
+                transition: 'var(--transition)', marginLeft: 'auto'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <ThumbsUp size={16} fill={isUpvoted ? 'var(--primary)' : 'none'} />
+              {issue.upvotes_count || 0} Upvotes
+            </button>
           </div>
 
           {/* Description */}
@@ -292,7 +345,46 @@ const IssueDetail = () => {
             </form>
 
             {/* Comments List */}
-            {comments.length === 0 && (
+            {comments.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {comments.map((c) => (
+                  <div key={c.comment_id} className="glass-card animate-slideUp" style={{ 
+                    padding: '16px', 
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid var(--glass-border)'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ 
+                          width: '24px', height: '24px', borderRadius: '50%', 
+                          background: 'var(--primary)', display: 'flex', 
+                          alignItems: 'center', justifyContent: 'center',
+                          fontSize: '0.7rem', fontWeight: 800, color: 'white'
+                        }}>
+                          {c.user_name?.charAt(0).toUpperCase()}
+                        </div>
+                        <span style={{ fontWeight: 600, color: 'var(--light)', fontSize: '0.9rem' }}>
+                          {c.user_name}
+                        </span>
+                      </div>
+                      <span style={{ color: 'var(--gray)', fontSize: '0.8rem' }}>
+                        {new Date(c.created_at).toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                    <p style={{ 
+                      fontSize: '0.9rem', 
+                      color: 'var(--gray-light)', 
+                      lineHeight: 1.6,
+                      paddingLeft: '32px'
+                    }}>
+                      {c.comment}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
               <div style={{
                 textAlign: 'center', padding: '32px',
                 color: 'var(--gray)', fontSize: '0.9rem',

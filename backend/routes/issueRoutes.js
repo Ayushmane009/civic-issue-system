@@ -7,7 +7,8 @@ const {
   getIssueById,
   updateIssueStatus,
   addComment,
-  deleteIssue
+  deleteIssue,
+  toggleUpvote
 } = require("../controllers/issueController");
 
 const upload = require("../middleware/upload");
@@ -27,6 +28,9 @@ router.put("/status", verifyToken, updateIssueStatus);
 
 // DELETE issue
 router.delete("/:id", verifyToken, deleteIssue);
+
+// TOGGLE upvote
+router.post("/:id/upvote", verifyToken, toggleUpvote);
 
 // ADD comment
 router.post("/comment", verifyToken, addComment);

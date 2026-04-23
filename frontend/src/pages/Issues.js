@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
   MapPin, Clock, MessageCircle, Search,
-  Filter, Image, ChevronRight, AlertCircle, Plus
+  Filter, Image, ChevronRight, AlertCircle, Plus, ThumbsUp
 } from 'lucide-react';
 
 const Issues = ({ myIssues = false }) => {
@@ -15,6 +15,7 @@ const Issues = ({ myIssues = false }) => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [upvotedIssues, setUpvotedIssues] = useState(new Set());
 
   useEffect(() => {
     const fetchIssues = async () => {
@@ -31,8 +32,52 @@ const Issues = ({ myIssues = false }) => {
         setLoading(false);
       }
     };
+
+    const fetchUpvotes = async () => {
+      if (!user) return;
+      try {
+        const res = await axios.get('http://localhost:5000/api/users/upvotes', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUpvotedIssues(new Set(res.data));
+      } catch (err) {
+        console.error('Failed to load upvotes', err);
+      }
+    };
+
     fetchIssues();
-  }, [myIssues, user]);
+    fetchUpvotes();
+  }, [myIssues, user, token]);
+
+  const handleUpvote = async (e, issueId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return; // or show toast
+
+    try {
+      const res = await axios.post(`http://localhost:5000/api/issues/${issueId}/upvote`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const isUpvoted = res.data.upvoted;
+      
+      setUpvotedIssues(prev => {
+        const next = new Set(prev);
+        if (isUpvoted) next.add(issueId);
+        else next.delete(issueId);
+        return next;
+      });
+
+      setIssues(prev => prev.map(iss => {
+        if (iss.id === issueId) {
+          return { ...iss, upvotes_count: (iss.upvotes_count || 0) + (isUpvoted ? 1 : -1) };
+        }
+        return iss;
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const filtered = issues.filter(issue => {
     const matchSearch = !search ||
@@ -233,12 +278,30 @@ const Issues = ({ myIssues = false }) => {
                   <MapPin size={13} />
                   {issue.location || 'Unknown'}
                 </div>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                  fontSize: '0.8rem', color: 'var(--primary-light)',
-                  fontWeight: 600,
-                }}>
-                  View <ChevronRight size={14} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <button 
+                    onClick={(e) => handleUpvote(e, issue.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '4px',
+                      background: 'none', border: 'none',
+                      color: upvotedIssues.has(issue.id) ? 'var(--primary)' : 'var(--gray)',
+                      cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
+                      padding: '4px 8px', borderRadius: 'var(--radius-sm)',
+                      transition: 'var(--transition)'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                  >
+                    <ThumbsUp size={14} fill={upvotedIssues.has(issue.id) ? 'var(--primary)' : 'none'} />
+                    {issue.upvotes_count || 0}
+                  </button>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: '4px',
+                    fontSize: '0.8rem', color: 'var(--primary-light)',
+                    fontWeight: 600,
+                  }}>
+                    View <ChevronRight size={14} />
+                  </div>
                 </div>
               </div>
             </div>

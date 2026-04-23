@@ -12,6 +12,15 @@ db.connect((err) => {
         console.log("Database connection failed");
     } else {
         console.log("Database connected");
+        // Ensure upvotes table exists
+        db.query(`CREATE TABLE IF NOT EXISTS upvotes (
+            user_id INT NOT NULL,
+            issue_id INT NOT NULL,
+            PRIMARY KEY (user_id, issue_id)
+        )`, (err) => {
+            if (err) console.error("Error creating upvotes table:", err);
+            else console.log("Upvotes table ready");
+        });
     }
 });
 

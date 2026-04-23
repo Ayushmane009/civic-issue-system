@@ -26,7 +26,12 @@ exports.reportIssue = (req, res) => {
 // ✅ GET ALL ISSUES
 exports.getAllIssues = (req, res) => {
 
-  const sql = "SELECT * FROM issues ORDER BY created_at DESC";
+  const sql = `
+    SELECT *, 
+      (SELECT COUNT(*) FROM upvotes WHERE upvotes.issue_id = issues.id) AS upvotes_count
+    FROM issues
+    ORDER BY created_at DESC
+  `;
 
   db.query(sql, (err, result) => {
 
@@ -41,7 +46,12 @@ exports.getIssueById = (req, res) => {
 
   const issueId = req.params.id;
 
-  const sql = "SELECT * FROM issues WHERE id = ?";
+  const sql = `
+    SELECT *, 
+      (SELECT COUNT(*) FROM upvotes WHERE upvotes.issue_id = issues.id) AS upvotes_count
+    FROM issues
+    WHERE id = ?
+  `;
 
   db.query(sql, [issueId], (err, result) => {
 
@@ -51,7 +61,23 @@ exports.getIssueById = (req, res) => {
       return res.status(404).json({ message: "Issue not found" });
     }
 
-    res.json(result[0]);
+    const issue = result[0];
+
+    // Fetch comments for this issue
+    const sqlComments = `
+      SELECT c.*, u.name as user_name 
+      FROM comments c
+      JOIN users u ON c.user_id = u.user_id
+      WHERE c.issue_id = ?
+      ORDER BY c.created_at DESC
+    `;
+
+    db.query(sqlComments, [issueId], (err, commentResult) => {
+      if (err) return res.status(500).json(err);
+      
+      issue.comments = commentResult;
+      res.json(issue);
+    });
   });
 };
 
@@ -125,6 +151,31 @@ exports.addComment = (req, res) => {
     res.json({
       message: "Comment added"
     });
+  });
+};
+
+// ✅ TOGGLE UPVOTE
+exports.toggleUpvote = (req, res) => {
+  const issueId = req.params.id;
+  const userId = req.user.id || req.user.user_id;
+
+  // Check if upvote already exists
+  db.query("SELECT * FROM upvotes WHERE user_id = ? AND issue_id = ?", [userId, issueId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    if (results.length > 0) {
+      // User already upvoted, so remove it (downvote/undo)
+      db.query("DELETE FROM upvotes WHERE user_id = ? AND issue_id = ?", [userId, issueId], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Upvote removed", upvoted: false });
+      });
+    } else {
+      // Add upvote
+      db.query("INSERT INTO upvotes (user_id, issue_id) VALUES (?, ?)", [userId, issueId], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Upvoted successfully", upvoted: true });
+      });
+    }
   });
 };
 

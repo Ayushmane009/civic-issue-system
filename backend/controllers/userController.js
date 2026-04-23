@@ -65,3 +65,12 @@ exports.loginUser = (req, res) => {
   });
 };
 
+exports.getUserUpvotes = (req, res) => {
+  const userId = req.user.id || req.user.user_id;
+  const sql = "SELECT issue_id FROM upvotes WHERE user_id = ?";
+  db.query(sql, [userId], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results.map(row => row.issue_id));
+  });
+};
+

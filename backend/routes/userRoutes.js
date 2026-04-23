@@ -2,7 +2,7 @@ const express = require("express");
 const { verifyToken } = require("../middleware/authMiddleware");
 const db = require("../config/database");
 const router = express.Router();
-const { registerUser, loginUser } = require("../controllers/userController");
+const { registerUser, loginUser, getUserUpvotes } = require("../controllers/userController");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
@@ -15,6 +15,7 @@ router.get("/profile", verifyToken, (req, res) => {
     res.json(result[0]);
   });
 });
+router.get("/upvotes", verifyToken, getUserUpvotes);
 
 module.exports = router;
 
