@@ -56,11 +56,10 @@ After that, the admin can see the complaint and update its status.
 | -------------- | ---------------------------------- |
 | Frontend       | React.js / HTML / CSS / JavaScript |
 | Backend        | Node.js + Express.js               |
-| Database       | MySql                            |
+| Database       | MySql                              |
 | Authentication | Google OAuth 2.0 + JWT             |
 | Maps           | Google Maps API or Leaflet         |
-| Image Upload   | Cloudinary / Local Storage         |
-| Notifications  | Email / SMS / Push Notification    |
+
 
 ---
 
@@ -136,11 +135,11 @@ Create a `.env` file inside backend folder.
 
 ```env
 PORT=5000
-MONGO_URI=your_mongodb_connection
+MYSQL_URI=your_mysql_connection
 JWT_SECRET=your_secret_key
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-CLOUDINARY_URL=your_cloudinary_url
+
 ```
 
 ---
@@ -203,7 +202,6 @@ In the future, we can add:
 # Contributors
 
 * Ayush Mane
-* Team Members
 
 # License
 
