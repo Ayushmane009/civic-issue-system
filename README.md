@@ -72,7 +72,7 @@ NagarSathi/
 ├── README.md
 How to Run
 1. Clone project
-git clone https://github.com/your-username/nagarsathi.git
+git clone https://github.com/Ayushmane009/civic-issue-system.git
 cd nagarsathi
 2. Start frontend
 cd frontend
