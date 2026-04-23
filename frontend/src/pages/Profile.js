@@ -16,6 +16,7 @@ const Profile = () => {
     const fetchUserIssues = async () => {
       try {
         const res = await axios.get('http://localhost:5000/api/issues/all');
+        console.log(res);
         const userIssues = res.data.filter(i =>
           i.user_id === (user?.id || user?.user_id)
         );
@@ -69,7 +70,7 @@ const Profile = () => {
 
           <div style={{ flex: 1, minWidth: '200px' }}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '6px' }}>
-              {user?.name || 'User'}
+              {user?.name || 'Ayush'}
             </h1>
             <div style={{
               display: 'flex', alignItems: 'center', gap: '6px',
@@ -139,8 +140,8 @@ const Profile = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {issues.map((issue) => (
               <Link
-                key={issue.issue_id}
-                to={`/issues/${issue.issue_id}`}
+                key={issue.id}
+                to={`/issues/${issue.id}`}
                 style={{
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   padding: '16px',

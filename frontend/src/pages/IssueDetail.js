@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import {
   ArrowLeft, MapPin, Clock, User, Send,
-  MessageCircle, Image, Calendar, Tag
+  MessageCircle, Image, Calendar, Tag, Trash2
 } from 'lucide-react';
 
 const IssueDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user, token } = useAuth();
   const { addToast } = useToast();
   const [issue, setIssue] = useState(null);
@@ -17,6 +18,7 @@ const IssueDetail = () => {
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   useEffect(() => {
     fetchIssue();
@@ -53,6 +55,38 @@ const IssueDetail = () => {
       addToast('Failed to add comment', 'error');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this issue? This action cannot be undone.")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/issues/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      addToast('Issue deleted successfully', 'success');
+      navigate('/issues');
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Failed to delete issue', 'error');
+    }
+  };
+
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    setUpdatingStatus(true);
+    try {
+      await axios.put('http://localhost:5000/api/issues/status', {
+        issue_id: id,
+        status: newStatus
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      addToast('Status updated', 'success');
+      fetchIssue();
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Failed to update status', 'error');
+    } finally {
+      setUpdatingStatus(false);
     }
   };
 
@@ -122,6 +156,37 @@ const IssueDetail = () => {
 
         {/* Content */}
         <div style={{ padding: '32px' }}>
+          {/* Admin Controls */}
+          {user?.role === 'admin' && (
+            <div style={{
+              background: 'rgba(255,255,255,0.05)',
+              padding: '16px', borderRadius: 'var(--radius-md)',
+              marginBottom: '20px', display: 'flex', gap: '16px',
+              alignItems: 'center', flexWrap: 'wrap'
+            }}>
+              <div style={{ fontWeight: 600, color: 'var(--primary)' }}>Admin Controls:</div>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <select 
+                  value={issue.status} 
+                  onChange={handleStatusChange}
+                  disabled={updatingStatus}
+                  className="input-dark"
+                  style={{ width: 'auto', padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="resolved">Resolved</option>
+                </select>
+                <button onClick={handleDelete} className="btn btn-sm" style={{
+                  background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
+                  border: '1px solid rgba(239, 68, 68, 0.2)'
+                }}>
+                  <Trash2 size={14} /> Delete
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Category + Status */}
           <div style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',

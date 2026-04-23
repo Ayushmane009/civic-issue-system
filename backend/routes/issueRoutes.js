@@ -6,7 +6,8 @@ const {
   getAllIssues,
   getIssueById,
   updateIssueStatus,
-  addComment
+  addComment,
+  deleteIssue
 } = require("../controllers/issueController");
 
 const upload = require("../middleware/upload");
@@ -22,7 +23,10 @@ router.get("/all", getAllIssues);
 router.get("/:id", getIssueById);
 
 // UPDATE status
-router.put("/status", updateIssueStatus);
+router.put("/status", verifyToken, updateIssueStatus);
+
+// DELETE issue
+router.delete("/:id", verifyToken, deleteIssue);
 
 // ADD comment
 router.post("/comment", verifyToken, addComment);

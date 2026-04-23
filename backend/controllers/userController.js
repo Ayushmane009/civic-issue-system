@@ -11,7 +11,7 @@ exports.registerUser = async (req, res) => {
 
     // insert into DB
     const sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'user')";
-    
+
     db.query(sql, [name, email, hashedPassword], (err, result) => {
       if (err) {
         return res.status(500).json({ error: err.message });
@@ -23,13 +23,13 @@ exports.registerUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+}
 
 exports.loginUser = (req, res) => {
   const { email, password } = req.body;
 
   const sql = "SELECT * FROM users WHERE email = ?";
-  
+
   db.query(sql, [email], async (err, result) => {
     if (err) return res.status(500).json(err);
 
@@ -47,7 +47,7 @@ exports.loginUser = (req, res) => {
 
     // generate token - use user_id for consistency
     const token = jwt.sign(
-      { user_id: user.user_id, id: user.user_id, email: user.email },
+      { user_id: user.user_id, id: user.user_id, email: user.email, role: user.role },
       process.env.JWT_SECRET || "secretkey",
       { expiresIn: "1d" }
     );
@@ -58,7 +58,8 @@ exports.loginUser = (req, res) => {
       user: {
         id: user.user_id,
         email: user.email,
-        name: user.name
+        name: user.name,
+        role: user.role
       }
     });
   });

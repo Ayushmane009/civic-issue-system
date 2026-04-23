@@ -22,11 +22,7 @@ router.get(
       { expiresIn: "1h" }
     );
 
-    res.json({
-      message: "Google login successful",
-      token: token,
-      user: req.user,
-    });
+    res.redirect(`http://localhost:3000/dashboard?token=${token}`);
   }
 );
 

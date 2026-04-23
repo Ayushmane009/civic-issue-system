@@ -150,8 +150,8 @@ const Issues = ({ myIssues = false }) => {
       }}>
         {filtered.map((issue) => (
           <Link
-            key={issue.issue_id}
-            to={`/issues/${issue.issue_id}`}
+            key={issue.id}
+            to={`/issues/${issue.id}`}
             className="glass-card glass-card-hover"
             style={{
               padding: 0,

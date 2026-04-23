@@ -41,7 +41,7 @@ exports.getIssueById = (req, res) => {
 
   const issueId = req.params.id;
 
-  const sql = "SELECT * FROM issues WHERE issue_id = ?";
+  const sql = "SELECT * FROM issues WHERE id = ?";
 
   db.query(sql, [issueId], (err, result) => {
 
@@ -57,17 +57,52 @@ exports.getIssueById = (req, res) => {
 
 // ✅ UPDATE STATUS
 exports.updateIssueStatus = (req, res) => {
+  const userId = req.user.id || req.user.user_id;
 
-  const { issue_id, status } = req.body;
-
-  const sql = "UPDATE issues SET status = ? WHERE issue_id = ?";
-
-  db.query(sql, [status, issue_id], (err, result) => {
-
+  db.query("SELECT role FROM users WHERE user_id = ?", [userId], (err, result) => {
     if (err) return res.status(500).json(err);
+    if (result.length === 0 || result[0].role !== 'admin') {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
 
-    res.json({
-      message: "Status updated"
+    const { issue_id, status } = req.body;
+
+    const sql = "UPDATE issues SET status = ? WHERE id = ?";
+
+    db.query(sql, [status, issue_id], (err, result) => {
+      if (err) return res.status(500).json(err);
+
+      res.json({
+        message: "Status updated"
+      });
+    });
+  });
+};
+
+// ✅ DELETE ISSUE
+exports.deleteIssue = (req, res) => {
+  const userId = req.user.id || req.user.user_id;
+
+  db.query("SELECT role FROM users WHERE user_id = ?", [userId], (err, result) => {
+    if (err) return res.status(500).json(err);
+    if (result.length === 0 || result[0].role !== 'admin') {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const issueId = req.params.id;
+
+    // Delete comments first to avoid foreign key constraint errors
+    const sqlDeleteComments = "DELETE FROM comments WHERE issue_id = ?";
+    db.query(sqlDeleteComments, [issueId], (err) => {
+      if (err) return res.status(500).json(err);
+
+      // Then delete the issue
+      const sqlDeleteIssue = "DELETE FROM issues WHERE id = ?";
+      db.query(sqlDeleteIssue, [issueId], (err, result) => {
+        if (err) return res.status(500).json(err);
+        
+        res.json({ message: "Issue deleted successfully" });
+      });
     });
   });
 };

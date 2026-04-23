@@ -6,9 +6,9 @@ const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN':
-      return { ...state, user: action.payload, token: action.payload.token };
+      return { ...state, user: action.payload.user, token: action.payload.token };
     case 'LOGOUT':
-      return { user: null, token: null };
+      return { user: null, token: null, loading: false };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     default:
@@ -20,6 +20,14 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, { user: null, token: null, loading: true });
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get('token');
+    
+    if (tokenFromUrl) {
+      localStorage.setItem('token', tokenFromUrl);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -39,19 +47,23 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const res = await axios.post('http://localhost:5000/api/users/login', { email, password });
-      const { token } = res.data;
+      const { token, user } = res.data;
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      dispatch({ type: 'LOGIN', payload: res.data });
+      dispatch({ type: 'LOGIN', payload: { token, user } });
       return res.data;
     } catch (error) {
-      throw error.response.data;
+      throw error.response?.data || { message: error.message || 'Network error. Please check if the server is running.' };
     }
   };
 
   const register = async (name, email, password) => {
-    const res = await axios.post('http://localhost:5000/api/users/register', { name, email, password });
-    return res.data;
+    try {
+      const res = await axios.post('http://localhost:5000/api/users/register', { name, email, password });
+      return res.data;
+    } catch (error) {
+      throw error.response?.data || { message: error.message || 'Network error. Please check if the server is running.' };
+    }
   };
 
   const logout = () => {

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
   MapPin, Camera, Send, X, Flag, Check,
-  Construction, Shield, Trash2, Bus
+  Construction, Shield, Trash2, Bus, Crosshair, Loader
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -24,6 +24,79 @@ const Report = () => {
   });
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [locating, setLocating] = useState(false);
+
+  // Reverse geocode coordinates to a human-readable address
+  const reverseGeocode = useCallback(async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await response.json();
+      if (data && data.address) {
+        const addr = data.address;
+        // Build a readable address from components
+        const parts = [
+          addr.road || addr.pedestrian || addr.neighbourhood,
+          addr.suburb || addr.village,
+          addr.city || addr.town || addr.state_district,
+          addr.state,
+        ].filter(Boolean);
+        return parts.join(', ') || data.display_name;
+      }
+      return data.display_name || '';
+    } catch {
+      return '';
+    }
+  }, []);
+
+  // Detect user location
+  const detectLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      addToast('Geolocation is not supported by your browser', 'error');
+      return;
+    }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        const address = await reverseGeocode(latitude, longitude);
+        if (address) {
+          setFormData(prev => ({ ...prev, location: address }));
+          addToast('Location detected successfully!', 'success');
+        } else {
+          setFormData(prev => ({ ...prev, location: `${latitude.toFixed(5)}, ${longitude.toFixed(5)}` }));
+          addToast('Got coordinates, but could not get address', 'info');
+        }
+        setLocating(false);
+      },
+      (error) => {
+        setLocating(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            addToast('Location permission denied. Please allow location access.', 'error');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            addToast('Location information is unavailable.', 'error');
+            break;
+          case error.TIMEOUT:
+            addToast('Location request timed out.', 'error');
+            break;
+          default:
+            addToast('An unknown error occurred while detecting location.', 'error');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  }, [addToast, reverseGeocode]);
+
+  // Auto-detect location on page load
+  useEffect(() => {
+    detectLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -162,19 +235,53 @@ const Report = () => {
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
               color: 'var(--gray-light)', marginBottom: '8px',
             }}>Location</label>
-            <div style={{ position: 'relative' }}>
-              <MapPin size={16} style={{
-                position: 'absolute', left: '14px', top: '50%',
-                transform: 'translateY(-50%)', color: 'var(--gray)',
-              }} />
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g., Main Street intersection"
-                className="input-dark"
-                style={{ paddingLeft: '42px' }}
-              />
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
+              <div style={{ position: 'relative', flex: 1 }}>
+                <MapPin size={16} style={{
+                  position: 'absolute', left: '14px', top: '50%',
+                  transform: 'translateY(-50%)', color: 'var(--gray)',
+                }} />
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder={locating ? 'Detecting your location...' : 'e.g., Main Street intersection'}
+                  className="input-dark"
+                  style={{ paddingLeft: '42px' }}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={detectLocation}
+                disabled={locating}
+                title="Detect my location"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  padding: '0 16px',
+                  background: locating
+                    ? 'rgba(99, 102, 241, 0.15)'
+                    : 'rgba(99, 102, 241, 0.1)',
+                  border: '1px solid rgba(99, 102, 241, 0.3)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--primary-light)',
+                  cursor: locating ? 'not-allowed' : 'pointer',
+                  transition: 'var(--transition)',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  whiteSpace: 'nowrap',
+                  opacity: locating ? 0.7 : 1,
+                }}
+              >
+                {locating ? (
+                  <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                ) : (
+                  <Crosshair size={16} />
+                )}
+                {locating ? 'Detecting...' : 'Detect'}
+              </button>
             </div>
           </div>
 
