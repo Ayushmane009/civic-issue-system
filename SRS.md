@@ -56,7 +56,7 @@ After that, the admin can see the complaint and update its status.
 | -------------- | ---------------------------------- |
 | Frontend       | React.js / HTML / CSS / JavaScript |
 | Backend        | Node.js + Express.js               |
-| Database       | MongoDB                            |
+| Database       | MySql                            |
 | Authentication | Google OAuth 2.0 + JWT             |
 | Maps           | Google Maps API or Leaflet         |
 | Image Upload   | Cloudinary / Local Storage         |
