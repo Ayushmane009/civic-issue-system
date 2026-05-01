@@ -5,7 +5,10 @@ const {
   reportIssue,
   getAllIssues,
   getIssueById,
+  getIssuesByDepartment,
   updateIssueStatus,
+  updateIssuePriority,
+  addRemarks,
   addComment,
   deleteIssue,
   toggleUpvote
@@ -14,19 +17,28 @@ const {
 const upload = require("../middleware/upload");
 const { verifyToken } = require("../middleware/authMiddleware");
 
-// POST issue
+// POST issue (auto-assigns department based on category)
 router.post("/report", verifyToken, upload.single("image"), reportIssue);
 
 // GET all issues
 router.get("/all", getAllIssues);
 
+// GET issues by department (with optional ?status= filter)
+router.get("/department/:deptId", verifyToken, getIssuesByDepartment);
+
 // GET single issue
 router.get("/:id", getIssueById);
 
-// UPDATE status
+// UPDATE status (department-scoped for admins)
 router.put("/status", verifyToken, updateIssueStatus);
 
-// DELETE issue
+// UPDATE priority (department-scoped for admins)
+router.put("/priority", verifyToken, updateIssuePriority);
+
+// ADD remarks (admin only)
+router.put("/remarks", verifyToken, addRemarks);
+
+// DELETE issue (department-scoped for admins)
 router.delete("/:id", verifyToken, deleteIssue);
 
 // TOGGLE upvote

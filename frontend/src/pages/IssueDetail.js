@@ -5,7 +5,7 @@ import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import {
   ArrowLeft, MapPin, Clock, User, Send,
-  MessageCircle, Image, Calendar, Tag, Trash2, ThumbsUp
+  MessageCircle, Image, Calendar, Tag, Trash2, ThumbsUp, Building2
 } from 'lucide-react';
 
 const IssueDetail = () => {
@@ -20,6 +20,7 @@ const IssueDetail = () => {
   const [submitting, setSubmitting] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [isUpvoted, setIsUpvoted] = useState(false);
+  const [updatingPriority, setUpdatingPriority] = useState(false);
 
   useEffect(() => {
     fetchIssue();
@@ -105,6 +106,25 @@ const IssueDetail = () => {
     }
   };
 
+  const handlePriorityChange = async (e) => {
+    const newPriority = e.target.value;
+    setUpdatingPriority(true);
+    try {
+      await axios.put('http://localhost:5000/api/issues/priority', {
+        issue_id: id,
+        priority: newPriority
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      addToast('Priority updated', 'success');
+      fetchIssue();
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Failed to update priority', 'error');
+    } finally {
+      setUpdatingPriority(false);
+    }
+  };
+
   const handleUpvote = async () => {
     if (!user) return;
     try {
@@ -124,6 +144,16 @@ const IssueDetail = () => {
     }
   };
 
+  const getPriorityStyle = (priority) => {
+    const map = {
+      Low: { bg: 'rgba(16, 185, 129, 0.12)', color: '#34d399' },
+      Medium: { bg: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24' },
+      High: { bg: 'rgba(234, 88, 12, 0.12)', color: '#f97316' },
+      Urgent: { bg: 'rgba(239, 68, 68, 0.12)', color: '#f87171' },
+    };
+    return map[priority] || map.Medium;
+  };
+
   const getStatusStyle = (status) => {
     const map = {
       pending: { bg: 'rgba(239, 68, 68, 0.12)', color: '#f87171', label: 'Pending' },
@@ -138,7 +168,7 @@ const IssueDetail = () => {
     return (
       <div className="loader-overlay">
         <div className="loader-spinner" />
-        <p style={{ color: 'var(--gray)' }}>Loading issue...</p>
+        <p style={{ color: 'var(--text-muted)' }}>Loading issue...</p>
       </div>
     );
   }
@@ -161,7 +191,7 @@ const IssueDetail = () => {
       {/* Back Button */}
       <Link to="/issues" style={{
         display: 'inline-flex', alignItems: 'center', gap: '8px',
-        color: 'var(--gray-light)', fontSize: '0.9rem', marginBottom: '24px',
+        color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '24px',
         textDecoration: 'none', fontWeight: 500,
         transition: 'var(--transition)',
       }}>
@@ -169,7 +199,7 @@ const IssueDetail = () => {
       </Link>
 
       {/* Issue Card */}
-      <div className="glass-card animate-slideUp" style={{ padding: '0', overflow: 'hidden' }}>
+      <div className="modern-card animate-slideUp" style={{ padding: '0', overflow: 'hidden' }}>
         {/* Image */}
         {issue.image && (
           <div style={{ position: 'relative' }}>
@@ -190,10 +220,10 @@ const IssueDetail = () => {
 
         {/* Content */}
         <div style={{ padding: '32px' }}>
-          {/* Admin Controls */}
-          {user?.role === 'admin' && (
+          {/* Admin Controls — only show if admin belongs to same department or has no dept (super admin) */}
+          {user?.role === 'admin' && (!user?.department_id || user?.department_id === issue.department_id) && (
             <div style={{
-              background: 'rgba(255,255,255,0.05)',
+              background: 'var(--bg-secondary)',
               padding: '16px', borderRadius: 'var(--radius-md)',
               marginBottom: '20px', display: 'flex', gap: '16px',
               alignItems: 'center', flexWrap: 'wrap'
@@ -204,12 +234,24 @@ const IssueDetail = () => {
                   value={issue.status} 
                   onChange={handleStatusChange}
                   disabled={updatingStatus}
-                  className="input-dark"
+                  className="input-modern"
                   style={{ width: 'auto', padding: '6px 12px', fontSize: '0.85rem' }}
                 >
                   <option value="pending">Pending</option>
                   <option value="in-progress">In Progress</option>
                   <option value="resolved">Resolved</option>
+                </select>
+                <select 
+                  value={issue.priority || 'Medium'} 
+                  onChange={handlePriorityChange}
+                  disabled={updatingPriority}
+                  className="input-modern"
+                  style={{ width: 'auto', padding: '6px 12px', fontSize: '0.85rem' }}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Urgent">Urgent</option>
                 </select>
                 <button onClick={handleDelete} className="btn btn-sm" style={{
                   background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
@@ -236,6 +278,23 @@ const IssueDetail = () => {
             }}>
               {status.label}
             </span>
+            <span className="badge" style={{
+              background: getPriorityStyle(issue.priority).bg, color: getPriorityStyle(issue.priority).color,
+              padding: '6px 14px', fontSize: '0.8rem',
+            }}>
+              {issue.priority || 'Medium'}
+            </span>
+            {/* Department Badge */}
+            {issue.department_name && (
+              <span className="badge dept-badge" style={{
+                background: 'var(--primary-light)',
+                color: 'var(--primary)',
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '6px 14px', fontSize: '0.8rem',
+              }}>
+                <Building2 size={12} /> {issue.department_name}
+              </span>
+            )}
           </div>
 
           {/* Title */}
@@ -252,7 +311,7 @@ const IssueDetail = () => {
             {issue.location && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
-                fontSize: '0.85rem', color: 'var(--gray-light)',
+                fontSize: '0.85rem', color: 'var(--text-secondary)',
               }}>
                 <MapPin size={14} style={{ color: 'var(--primary)' }} />
                 {issue.location}
@@ -261,7 +320,7 @@ const IssueDetail = () => {
             {issue.created_at && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
-                fontSize: '0.85rem', color: 'var(--gray-light)',
+                fontSize: '0.85rem', color: 'var(--text-secondary)',
               }}>
                 <Calendar size={14} style={{ color: 'var(--primary)' }} />
                 {new Date(issue.created_at).toLocaleDateString('en-US', {
@@ -275,9 +334,9 @@ const IssueDetail = () => {
               onClick={handleUpvote}
               style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
-                background: isUpvoted ? 'rgba(var(--primary-rgb), 0.1)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${isUpvoted ? 'var(--primary)' : 'var(--glass-border)'}`,
-                color: isUpvoted ? 'var(--primary)' : 'var(--gray-light)',
+                background: isUpvoted ? 'var(--primary-light)' : 'var(--bg-secondary)',
+                border: `1px solid ${isUpvoted ? 'var(--primary)' : 'var(--border-light)'}`,
+                color: isUpvoted ? 'var(--primary)' : 'var(--text-secondary)',
                 cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600,
                 padding: '6px 12px', borderRadius: 'var(--radius-md)',
                 transition: 'var(--transition)', marginLeft: 'auto'
@@ -293,16 +352,42 @@ const IssueDetail = () => {
           {/* Description */}
           <div style={{
             padding: '20px',
-            background: 'rgba(255, 255, 255, 0.03)',
+            background: 'var(--bg-secondary)',
             borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--glass-border)',
+            border: '1px solid var(--border-light)',
             lineHeight: 1.7,
-            color: 'var(--gray-light)',
+            color: 'var(--text-secondary)',
             fontSize: '0.95rem',
             marginBottom: '32px',
           }}>
             {issue.description || 'No description provided.'}
           </div>
+
+          {/* Admin Remarks Section */}
+          {issue.remarks && (
+            <div style={{
+              padding: '16px 20px',
+              background: 'var(--bg-secondary)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border-light)',
+              marginBottom: '32px',
+            }}>
+              <h4 style={{
+                fontSize: '0.9rem', fontWeight: 700,
+                color: 'var(--primary)',
+                marginBottom: '8px',
+                display: 'flex', alignItems: 'center', gap: '6px',
+              }}>
+                <MessageCircle size={14} /> Admin Remarks
+              </h4>
+              <p style={{
+                fontSize: '0.9rem', color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+              }}>
+                {issue.remarks}
+              </p>
+            </div>
+          )}
 
           {/* Comments Section */}
           <div>
@@ -324,7 +409,7 @@ const IssueDetail = () => {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Add a comment..."
-                className="input-dark"
+                className="input-modern"
                 style={{ flex: 1 }}
               />
               <button
@@ -348,10 +433,10 @@ const IssueDetail = () => {
             {comments.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {comments.map((c) => (
-                  <div key={c.comment_id} className="glass-card animate-slideUp" style={{ 
+                  <div key={c.comment_id} className="modern-card animate-slideUp" style={{ 
                     padding: '16px', 
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid var(--glass-border)'
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-light)'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -363,11 +448,11 @@ const IssueDetail = () => {
                         }}>
                           {c.user_name?.charAt(0).toUpperCase()}
                         </div>
-                        <span style={{ fontWeight: 600, color: 'var(--light)', fontSize: '0.9rem' }}>
+                        <span style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem' }}>
                           {c.user_name}
                         </span>
                       </div>
-                      <span style={{ color: 'var(--gray)', fontSize: '0.8rem' }}>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
                         {new Date(c.created_at).toLocaleDateString('en-US', {
                           month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                         })}
@@ -375,7 +460,7 @@ const IssueDetail = () => {
                     </div>
                     <p style={{ 
                       fontSize: '0.9rem', 
-                      color: 'var(--gray-light)', 
+                      color: 'var(--text-secondary)', 
                       lineHeight: 1.6,
                       paddingLeft: '32px'
                     }}>
@@ -387,8 +472,8 @@ const IssueDetail = () => {
             ) : (
               <div style={{
                 textAlign: 'center', padding: '32px',
-                color: 'var(--gray)', fontSize: '0.9rem',
-                background: 'rgba(255,255,255,0.02)',
+                color: 'var(--text-muted)', fontSize: '0.9rem',
+                background: 'var(--bg-secondary)',
                 borderRadius: 'var(--radius-md)',
               }}>
                 No comments yet. Be the first to share your thoughts!

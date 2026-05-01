@@ -28,7 +28,13 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = (req, res) => {
   const { email, password } = req.body;
 
-  const sql = "SELECT * FROM users WHERE email = ?";
+  // Join with departments to get department info
+  const sql = `
+    SELECT users.*, departments.department_name 
+    FROM users 
+    LEFT JOIN departments ON users.department_id = departments.id 
+    WHERE users.email = ?
+  `;
 
   db.query(sql, [email], async (err, result) => {
     if (err) return res.status(500).json(err);
@@ -45,9 +51,15 @@ exports.loginUser = (req, res) => {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    // generate token - use user_id for consistency
+    // generate token — include department_id for admin users
     const token = jwt.sign(
-      { user_id: user.user_id, id: user.user_id, email: user.email, role: user.role },
+      { 
+        user_id: user.user_id, 
+        id: user.user_id, 
+        email: user.email, 
+        role: user.role,
+        department_id: user.department_id 
+      },
       process.env.JWT_SECRET || "secretkey",
       { expiresIn: "1d" }
     );
@@ -59,7 +71,9 @@ exports.loginUser = (req, res) => {
         id: user.user_id,
         email: user.email,
         name: user.name,
-        role: user.role
+        role: user.role,
+        department_id: user.department_id,
+        department_name: user.department_name
       }
     });
   });
@@ -73,4 +87,3 @@ exports.getUserUpvotes = (req, res) => {
     res.json(results.map(row => row.issue_id));
   });
 };
-

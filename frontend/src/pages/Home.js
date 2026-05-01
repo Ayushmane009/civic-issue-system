@@ -49,9 +49,9 @@ const Home = () => {
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '8px 18px', borderRadius: '999px',
-            background: 'rgba(99, 102, 241, 0.1)',
+            background: 'var(--primary-light)',
             border: '1px solid rgba(99, 102, 241, 0.2)',
-            fontSize: '0.85rem', color: 'var(--primary-light)',
+            fontSize: '0.85rem', color: 'var(--primary)',
             marginBottom: '24px', fontWeight: 600,
           }}>
             <Zap size={14} />
@@ -239,7 +239,7 @@ const Home = () => {
       {/* Footer */}
       <footer style={{
         padding: '40px 24px',
-        borderTop: '1px solid var(--glass-border)',
+        borderTop: '1px solid var(--border-light)',
         textAlign: 'center',
       }}>
         <div style={{
@@ -249,8 +249,11 @@ const Home = () => {
           <MapPin size={18} style={{ color: 'var(--primary)' }} />
           <span style={{ fontWeight: 700, fontSize: '1.1rem' }} className="text-gradient">NAGAR-SATHI</span>
         </div>
-        <p style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '8px' }}>
           © 2026 NAGAR-SATHI. Building better communities together.
+        </p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', opacity: 0.8 }}>
+          Designed by Ayush Mane
         </p>
       </footer>
     </div>

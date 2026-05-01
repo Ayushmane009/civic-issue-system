@@ -10,15 +10,20 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Step 2: Callback
+// Step 2: Callback — includes role and department_id in JWT
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
 
     const token = jwt.sign(
-      { id: req.user.user_id, email: req.user.email },
-      "secretkey",
+      { 
+        id: req.user.user_id, 
+        email: req.user.email,
+        role: req.user.role || 'user',
+        department_id: req.user.department_id || null
+      },
+      process.env.JWT_SECRET || "secretkey",
       { expiresIn: "1h" }
     );
 

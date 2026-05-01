@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
   MapPin, Clock, MessageCircle, Search,
-  Filter, Image, ChevronRight, AlertCircle, Plus, ThumbsUp
+  Filter, Image, ChevronRight, AlertCircle, Plus, ThumbsUp, Building2
 } from 'lucide-react';
 
 const Issues = ({ myIssues = false }) => {
@@ -91,6 +91,17 @@ const Issues = ({ myIssues = false }) => {
   const statusOptions = ['all', 'pending', 'progress', 'in-progress', 'resolved'];
   const categoryOptions = ['all', 'infrastructure', 'safety', 'sanitation', 'transport'];
 
+  const getPriorityBadge = (priority) => {
+    const map = {
+      Low: { bg: 'rgba(16, 185, 129, 0.12)', color: '#34d399' },
+      Medium: { bg: 'rgba(245, 158, 11, 0.12)', color: '#fbbf24' },
+      High: { bg: 'rgba(234, 88, 12, 0.12)', color: '#f97316' },
+      Urgent: { bg: 'rgba(239, 68, 68, 0.12)', color: '#f87171' },
+    };
+    const p = map[priority] || map.Medium;
+    return { background: p.bg, color: p.color };
+  };
+
   const getStatusBadge = (status) => {
     const map = {
       pending: { bg: 'rgba(239, 68, 68, 0.12)', color: '#f87171' },
@@ -106,7 +117,7 @@ const Issues = ({ myIssues = false }) => {
     return (
       <div className="loader-overlay">
         <div className="loader-spinner" />
-        <p style={{ color: 'var(--gray)' }}>Loading issues...</p>
+        <p style={{ color: 'var(--text-muted)' }}>Loading issues...</p>
       </div>
     );
   }
@@ -119,10 +130,10 @@ const Issues = ({ myIssues = false }) => {
         marginBottom: '24px', flexWrap: 'wrap', gap: '16px',
       }}>
         <div>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)' }}>
             {myIssues ? 'My Issues' : 'All Issues'}
           </h1>
-          <p style={{ color: 'var(--gray)', fontSize: '0.9rem', marginTop: '4px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>
             {filtered.length} issue{filtered.length !== 1 ? 's' : ''} found
           </p>
         </div>
@@ -132,21 +143,21 @@ const Issues = ({ myIssues = false }) => {
       </div>
 
       {/* Search & Filters */}
-      <div className="glass-card" style={{
+      <div className="modern-card" style={{
         padding: '16px', marginBottom: '24px',
         display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center',
       }}>
         <div style={{ position: 'relative', flex: '1 1 250px' }}>
           <Search size={16} style={{
             position: 'absolute', left: '14px', top: '50%',
-            transform: 'translateY(-50%)', color: 'var(--gray)',
+            transform: 'translateY(-50%)', color: 'var(--text-muted)',
           }} />
           <input
             type="text"
             placeholder="Search issues..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="input-dark"
+            className="input-modern"
             style={{ paddingLeft: '40px' }}
           />
         </div>
@@ -154,11 +165,11 @@ const Issues = ({ myIssues = false }) => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="input-dark"
+          className="input-modern"
           style={{ flex: '0 0 auto', width: 'auto', cursor: 'pointer' }}
         >
           {statusOptions.map(s => (
-            <option key={s} value={s} style={{ background: 'var(--dark-lighter)' }}>
+            <option key={s} value={s} style={{ background: 'var(--bg-card)' }}>
               {s === 'all' ? 'All Status' : s.charAt(0).toUpperCase() + s.slice(1)}
             </option>
           ))}
@@ -167,11 +178,11 @@ const Issues = ({ myIssues = false }) => {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="input-dark"
+          className="input-modern"
           style={{ flex: '0 0 auto', width: 'auto', cursor: 'pointer' }}
         >
           {categoryOptions.map(c => (
-            <option key={c} value={c} style={{ background: 'var(--dark-lighter)' }}>
+            <option key={c} value={c} style={{ background: 'var(--bg-card)' }}>
               {c === 'all' ? 'All Categories' : c.charAt(0).toUpperCase() + c.slice(1)}
             </option>
           ))}
@@ -197,7 +208,7 @@ const Issues = ({ myIssues = false }) => {
           <Link
             key={issue.id}
             to={`/issues/${issue.id}`}
-            className="glass-card glass-card-hover"
+            className="modern-card modern-card-hover"
             style={{
               padding: 0,
               overflow: 'hidden',
@@ -234,7 +245,7 @@ const Issues = ({ myIssues = false }) => {
               {/* Category & Status */}
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                marginBottom: '12px',
+                marginBottom: '12px', flexWrap: 'wrap', gap: '6px',
               }}>
                 <span className="badge badge-category" style={{ textTransform: 'capitalize' }}>
                   {issue.category || 'General'}
@@ -242,6 +253,18 @@ const Issues = ({ myIssues = false }) => {
                 <span className="badge" style={getStatusBadge(issue.status)}>
                   {issue.status}
                 </span>
+                <span className="badge" style={{ ...getPriorityBadge(issue.priority), marginLeft: '0' }}>
+                  {issue.priority || 'Medium'}
+                </span>
+                {issue.department_name && (
+                  <span className="badge dept-badge" style={{
+                    background: 'var(--primary-light)',
+                    color: 'var(--primary)',
+                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                  }}>
+                    <Building2 size={11} /> {issue.department_name}
+                  </span>
+                )}
               </div>
 
               {/* Title */}
@@ -252,11 +275,12 @@ const Issues = ({ myIssues = false }) => {
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
+                color: 'var(--text-main)'
               }}>{issue.title}</h3>
 
               {/* Description */}
               <p style={{
-                color: 'var(--gray-light)', fontSize: '0.85rem',
+                color: 'var(--text-secondary)', fontSize: '0.85rem',
                 lineHeight: 1.5, marginBottom: '16px',
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -269,11 +293,11 @@ const Issues = ({ myIssues = false }) => {
               <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 paddingTop: '12px',
-                borderTop: '1px solid var(--glass-border)',
+                borderTop: '1px solid var(--border-light)',
               }}>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: '6px',
-                  fontSize: '0.8rem', color: 'var(--gray)',
+                  fontSize: '0.8rem', color: 'var(--text-muted)',
                 }}>
                   <MapPin size={13} />
                   {issue.location || 'Unknown'}
@@ -284,12 +308,12 @@ const Issues = ({ myIssues = false }) => {
                     style={{
                       display: 'flex', alignItems: 'center', gap: '4px',
                       background: 'none', border: 'none',
-                      color: upvotedIssues.has(issue.id) ? 'var(--primary)' : 'var(--gray)',
+                      color: upvotedIssues.has(issue.id) ? 'var(--primary)' : 'var(--text-muted)',
                       cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600,
                       padding: '4px 8px', borderRadius: 'var(--radius-sm)',
                       transition: 'var(--transition)'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
                   >
                     <ThumbsUp size={14} fill={upvotedIssues.has(issue.id) ? 'var(--primary)' : 'none'} />
@@ -297,7 +321,7 @@ const Issues = ({ myIssues = false }) => {
                   </button>
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: '4px',
-                    fontSize: '0.8rem', color: 'var(--primary-light)',
+                    fontSize: '0.8rem', color: 'var(--primary)',
                     fontWeight: 600,
                   }}>
                     View <ChevronRight size={14} />
@@ -313,10 +337,10 @@ const Issues = ({ myIssues = false }) => {
       {filtered.length === 0 && !error && (
         <div style={{
           textAlign: 'center', padding: '60px 20px',
-          color: 'var(--gray)',
+          color: 'var(--text-muted)',
         }}>
           <AlertCircle size={48} style={{ margin: '0 auto 16px', opacity: 0.4 }} />
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px', color: 'var(--light)' }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '8px', color: 'var(--text-main)' }}>
             No issues found
           </h3>
           <p style={{ marginBottom: '20px' }}>Try adjusting your search or filters</p>

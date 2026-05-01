@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   Search, Bell, Menu, X, LogOut, User,
-  LayoutDashboard, PlusCircle, MapPin, List, Globe
+  LayoutDashboard, PlusCircle, MapPin, List, Globe, Building2
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -18,6 +18,8 @@ const Navbar = () => {
     { name: 'Report', path: '/report', icon: PlusCircle },
     { name: 'Issues', path: '/issues', icon: Globe },
     { name: 'Map', path: '/map', icon: MapPin },
+    // Admin Panel — only shown to admin users (filtered below)
+    ...(user?.role === 'admin' ? [{ name: 'Admin Panel', path: '/admin', icon: Building2 }] : []),
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -33,11 +35,9 @@ const Navbar = () => {
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      background: 'rgba(15, 23, 42, 0.85)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-      boxShadow: '0 4px 30px rgba(0, 0, 0, 0.2)',
+      background: 'var(--bg-card)',
+      borderBottom: '1px solid var(--border-light)',
+      boxShadow: 'var(--shadow-sm)',
     }}>
       <div style={{
         maxWidth: '1400px',
@@ -60,15 +60,15 @@ const Navbar = () => {
           <div style={{
             width: '36px',
             height: '36px',
-            background: 'var(--gradient-primary)',
-            borderRadius: '10px',
+            background: 'var(--primary)',
+            borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}>
             <MapPin size={20} color="white" />
           </div>
-          <span className="text-gradient">NAGAR-SATHI</span>
+          <span style={{ color: 'var(--text-main)' }}>NAGAR-SATHI</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -86,11 +86,11 @@ const Navbar = () => {
                 alignItems: 'center',
                 gap: '6px',
                 padding: '8px 16px',
-                borderRadius: '12px',
+                borderRadius: '8px',
                 fontSize: '0.9rem',
                 fontWeight: 500,
-                color: isActive(item.path) ? 'white' : 'var(--gray-light)',
-                background: isActive(item.path) ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                color: isActive(item.path) ? 'var(--primary)' : 'var(--text-secondary)',
+                background: isActive(item.path) ? 'var(--primary-light)' : 'transparent',
                 transition: 'var(--transition)',
                 textDecoration: 'none',
               }}
@@ -107,13 +107,13 @@ const Navbar = () => {
             <>
               {/* Notifications */}
               <button style={{
-                position: 'relative',
                 padding: '8px',
                 background: 'transparent',
                 border: 'none',
-                color: 'var(--gray-light)',
-                borderRadius: '10px',
+                color: 'var(--text-secondary)',
+                borderRadius: '8px',
                 transition: 'var(--transition)',
+                cursor: 'pointer',
               }}>
                 <Bell size={20} />
                 <span style={{
@@ -142,19 +142,20 @@ const Navbar = () => {
                     alignItems: 'center',
                     gap: '10px',
                     padding: '6px 12px 6px 6px',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '14px',
-                    color: 'var(--light)',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-light)',
+                    borderRadius: '8px',
+                    color: 'var(--text-main)',
                     cursor: 'pointer',
                     transition: 'var(--transition)',
                   }}
                 >
                   <div style={{
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '10px',
-                    background: 'var(--gradient-pink)',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '6px',
+                    background: 'var(--primary-light)',
+                    color: 'var(--primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -174,10 +175,10 @@ const Navbar = () => {
                     right: 0,
                     top: 'calc(100% + 8px)',
                     width: '220px',
-                    background: 'var(--dark-lighter)',
-                    border: '1px solid var(--glass-border)',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-light)',
                     borderRadius: 'var(--radius-md)',
-                    boxShadow: 'var(--shadow-xl)',
+                    boxShadow: 'var(--shadow-lg)',
                     padding: '8px',
                     animation: 'slideDown 0.2s ease-out',
                     zIndex: 200,
@@ -190,8 +191,8 @@ const Navbar = () => {
                         alignItems: 'center',
                         gap: '10px',
                         padding: '10px 14px',
-                        borderRadius: '10px',
-                        color: 'var(--light)',
+                        borderRadius: '6px',
+                        color: 'var(--text-secondary)',
                         fontSize: '0.9rem',
                         textDecoration: 'none',
                         transition: 'var(--transition)',
@@ -208,8 +209,8 @@ const Navbar = () => {
                         alignItems: 'center',
                         gap: '10px',
                         padding: '10px 14px',
-                        borderRadius: '10px',
-                        color: 'var(--light)',
+                        borderRadius: '6px',
+                        color: 'var(--text-secondary)',
                         fontSize: '0.9rem',
                         textDecoration: 'none',
                         transition: 'var(--transition)',
@@ -220,17 +221,16 @@ const Navbar = () => {
                     </Link>
                     <div style={{
                       height: '1px',
-                      background: 'var(--glass-border)',
+                      background: 'var(--border-light)',
                       margin: '4px 0',
                     }} />
                     <button
                       onClick={handleLogout}
                       style={{
-                        display: 'flex',
                         alignItems: 'center',
                         gap: '10px',
                         padding: '10px 14px',
-                        borderRadius: '10px',
+                        borderRadius: '6px',
                         color: 'var(--danger)',
                         fontSize: '0.9rem',
                         background: 'none',
@@ -252,7 +252,7 @@ const Navbar = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <Link to="/login" style={{
                 padding: '8px 20px',
-                color: 'var(--gray-light)',
+                color: 'var(--text-secondary)',
                 fontWeight: 500,
                 fontSize: '0.9rem',
                 textDecoration: 'none',
@@ -275,7 +275,7 @@ const Navbar = () => {
             padding: '8px',
             background: 'transparent',
             border: 'none',
-            color: 'var(--light)',
+            color: 'var(--text-main)',
             cursor: 'pointer',
           }}
           className="mobile-toggle"
@@ -288,7 +288,8 @@ const Navbar = () => {
       {isMenuOpen && (
         <div style={{
           padding: '12px 16px 20px',
-          borderTop: '1px solid var(--glass-border)',
+          background: 'var(--bg-card)',
+          borderTop: '1px solid var(--border-light)',
           animation: 'slideDown 0.3s ease-out',
         }} className="mobile-menu">
           {/* Search */}
@@ -298,12 +299,12 @@ const Navbar = () => {
               left: '14px',
               top: '50%',
               transform: 'translateY(-50%)',
-              color: 'var(--gray)',
+              color: 'var(--text-muted)',
             }} />
             <input
               type="text"
               placeholder="Search issues..."
-              className="input-dark"
+              className="input-modern"
               style={{ paddingLeft: '40px' }}
             />
           </div>
@@ -315,13 +316,12 @@ const Navbar = () => {
               to={item.path}
               onClick={() => setIsMenuOpen(false)}
               style={{
-                display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
                 padding: '12px 16px',
-                borderRadius: '12px',
-                color: isActive(item.path) ? 'white' : 'var(--gray-light)',
-                background: isActive(item.path) ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                borderRadius: '8px',
+                color: isActive(item.path) ? 'var(--primary)' : 'var(--text-secondary)',
+                background: isActive(item.path) ? 'var(--primary-light)' : 'transparent',
                 fontWeight: 500,
                 textDecoration: 'none',
                 transition: 'var(--transition)',
@@ -334,17 +334,16 @@ const Navbar = () => {
 
           {user && (
             <>
-              <div style={{ height: '1px', background: 'var(--glass-border)', margin: '8px 0' }} />
+              <div style={{ height: '1px', background: 'var(--border-light)', margin: '8px 0' }} />
               <Link
                 to="/profile"
                 onClick={() => setIsMenuOpen(false)}
                 style={{
-                  display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
                   padding: '12px 16px',
-                  borderRadius: '12px',
-                  color: 'var(--gray-light)',
+                  borderRadius: '8px',
+                  color: 'var(--text-secondary)',
                   fontWeight: 500,
                   textDecoration: 'none',
                 }}
@@ -355,11 +354,10 @@ const Navbar = () => {
               <button
                 onClick={() => { handleLogout(); setIsMenuOpen(false); }}
                 style={{
-                  display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
                   padding: '12px 16px',
-                  borderRadius: '12px',
+                  borderRadius: '8px',
                   color: 'var(--danger)',
                   fontWeight: 500,
                   background: 'none',

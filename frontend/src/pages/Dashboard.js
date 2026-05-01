@@ -90,7 +90,7 @@ const Dashboard = () => {
     return (
       <div className="loader-overlay">
         <div className="loader-spinner" />
-        <p style={{ color: 'var(--gray)' }}>Loading Dashboard...</p>
+        <p style={{ color: 'var(--text-muted)' }}>Loading Dashboard...</p>
       </div>
     );
   }
@@ -107,7 +107,7 @@ const Dashboard = () => {
           { label: 'In Progress', value: stats.inProgress, icon: RefreshCw, color: 'var(--warning)' },
           { label: 'Resolved', value: stats.resolved, icon: CheckCircle, color: 'var(--secondary)' },
         ].map((s, i) => (
-          <div key={i} className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div key={i} className="modern-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{
               width: '44px', height: '44px', borderRadius: '14px',
               background: `${s.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -117,7 +117,7 @@ const Dashboard = () => {
             </div>
             <div>
               <div style={{ fontSize: '1.6rem', fontWeight: 800, lineHeight: 1 }}>{s.value}</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--gray)', marginTop: '4px' }}>{s.label}</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>{s.label}</div>
             </div>
           </div>
         ))}
@@ -128,7 +128,7 @@ const Dashboard = () => {
         className="map-activity-grid"
       >
         {/* Map */}
-        <div className="glass-card" style={{
+        <div className="modern-card" style={{
           padding: 0, overflow: 'hidden', borderRadius: 'var(--radius-lg)',
           position: 'relative', minHeight: '400px',
         }}>
@@ -140,7 +140,7 @@ const Dashboard = () => {
             <button
               className="btn btn-sm btn-secondary"
               onClick={() => { fetchData(); addToast('Refreshed!'); }}
-              style={{ background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(10px)' }}
+              style={{ background: 'var(--bg-card)' }}
             >
               <RefreshCw size={14} /> Refresh
             </button>
@@ -154,7 +154,7 @@ const Dashboard = () => {
           >
             <TileLayer
               attribution='&copy; OpenStreetMap'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             />
             {filteredIssues.map((issue) => {
               const cat = CATEGORY_MAP[issue.category] || { color: '#6366f1' };
@@ -197,7 +197,7 @@ const Dashboard = () => {
         </div>
 
         {/* Activity Feed */}
-        <div className="glass-card" style={{
+        <div className="modern-card" style={{
           padding: '20px',
           overflowY: 'auto',
           display: 'flex',
@@ -232,7 +232,10 @@ const Dashboard = () => {
                     padding: '14px',
                     borderRadius: '14px',
                     borderLeft: `3px solid ${cat.color}`,
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-light)',
+                    borderLeftWidth: '3px',
+                    borderLeftColor: cat.color,
                     transition: 'var(--transition)',
                     textDecoration: 'none',
                     color: 'inherit',
@@ -244,7 +247,7 @@ const Dashboard = () => {
                   </div>
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: '6px',
-                    fontSize: '0.75rem', color: 'var(--gray)',
+                    fontSize: '0.75rem', color: 'var(--text-secondary)',
                     marginBottom: '6px',
                   }}>
                     <MapPin size={12} />
@@ -257,7 +260,7 @@ const Dashboard = () => {
               );
             })}
             {filteredIssues.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--gray)' }}>
+              <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
                 <AlertCircle size={32} style={{ margin: '0 auto 12px', opacity: 0.5 }} />
                 <p>No issues match filters</p>
               </div>

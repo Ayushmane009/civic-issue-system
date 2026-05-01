@@ -54,7 +54,7 @@ const Register = () => {
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <div style={{
             width: '64px', height: '64px',
-            background: 'var(--gradient-primary)',
+            background: 'var(--primary)',
             borderRadius: '18px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 20px',

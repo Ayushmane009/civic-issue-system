@@ -21,6 +21,7 @@ clientID: process.env.GOOGLE_CLIENT_ID,
       db.query(checkUser, [email], (err, result) => {
 
         if (result.length > 0) {
+          // Return full user object including role and department_id
           return done(null, result[0]);
         } else {
 
@@ -33,6 +34,8 @@ clientID: process.env.GOOGLE_CLIENT_ID,
               user_id: newUser.insertId,
               name,
               email,
+              role: 'user',
+              department_id: null
             });
           });
         }

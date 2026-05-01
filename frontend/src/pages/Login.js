@@ -40,18 +40,17 @@ const Login = () => {
       <div className="animate-slideUp" style={{
         width: '100%',
         maxWidth: '440px',
-        background: 'rgba(255, 255, 255, 0.04)',
-        backdropFilter: 'blur(20px)',
+        background: 'var(--bg-card)',
         borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--glass-border)',
+        border: '1px solid var(--border-light)',
         padding: '48px 40px',
-        boxShadow: 'var(--shadow-xl)',
+        boxShadow: 'var(--shadow-md)',
       }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <div style={{
             width: '64px', height: '64px',
-            background: 'var(--gradient-primary)',
+            background: 'var(--primary)',
             borderRadius: '18px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 20px',
@@ -59,8 +58,8 @@ const Login = () => {
           }}>
             <MapPin size={30} color="white" />
           </div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '8px' }}>Welcome back</h2>
-          <p style={{ color: 'var(--gray)', fontSize: '0.95rem' }}>Sign in to continue to NAGAR-SATHI</p>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)' }}>Welcome back</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>Sign in to continue to NAGAR-SATHI</p>
         </div>
 
         {/* Google */}
@@ -71,10 +70,10 @@ const Login = () => {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             gap: '10px',
             padding: '14px',
-            background: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid var(--glass-border)',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border-light)',
             borderRadius: 'var(--radius-md)',
-            color: 'var(--light)',
+            color: 'var(--text-main)',
             fontSize: '0.95rem',
             fontWeight: 500,
             cursor: 'pointer',
@@ -93,11 +92,11 @@ const Login = () => {
         {/* Divider */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: '16px',
-          margin: '24px 0', color: 'var(--gray)',
+          margin: '24px 0', color: 'var(--text-muted)',
         }}>
-          <div style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }} />
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
           <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>or</span>
-          <div style={{ flex: 1, height: '1px', background: 'var(--glass-border)' }} />
+          <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
         </div>
 
         {/* Form */}
@@ -117,12 +116,12 @@ const Login = () => {
           <div style={{ marginBottom: '16px' }}>
             <label style={{
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
-              color: 'var(--gray-light)', marginBottom: '8px',
+              color: 'var(--text-secondary)', marginBottom: '8px',
             }}>Email</label>
             <div style={{ position: 'relative' }}>
               <Mail size={16} style={{
                 position: 'absolute', left: '14px', top: '50%',
-                transform: 'translateY(-50%)', color: 'var(--gray)',
+                transform: 'translateY(-50%)', color: 'var(--text-muted)',
               }} />
               <input
                 type="email"
@@ -130,7 +129,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="john@example.com"
-                className="input-dark"
+                className="input-modern"
                 style={{ paddingLeft: '42px' }}
               />
             </div>
@@ -139,12 +138,12 @@ const Login = () => {
           <div style={{ marginBottom: '24px' }}>
             <label style={{
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
-              color: 'var(--gray-light)', marginBottom: '8px',
+              color: 'var(--text-secondary)', marginBottom: '8px',
             }}>Password</label>
             <div style={{ position: 'relative' }}>
               <Lock size={16} style={{
                 position: 'absolute', left: '14px', top: '50%',
-                transform: 'translateY(-50%)', color: 'var(--gray)',
+                transform: 'translateY(-50%)', color: 'var(--text-muted)',
               }} />
               <input
                 type="password"
@@ -152,7 +151,7 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="input-dark"
+                className="input-modern"
                 style={{ paddingLeft: '42px' }}
               />
             </div>
@@ -179,11 +178,11 @@ const Login = () => {
         {/* Footer */}
         <p style={{
           textAlign: 'center', marginTop: '24px',
-          fontSize: '0.9rem', color: 'var(--gray)',
+          fontSize: '0.9rem', color: 'var(--text-muted)',
         }}>
           Don't have an account?{' '}
           <Link to="/register" style={{
-            color: 'var(--primary-light)', fontWeight: 600, textDecoration: 'none',
+            color: 'var(--primary)', fontWeight: 600, textDecoration: 'none',
           }}>Sign up</Link>
         </p>
       </div>

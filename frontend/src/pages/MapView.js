@@ -42,8 +42,8 @@ const MapView = () => {
       const res = await axios.get('http://localhost:5000/api/issues/all');
       const withCoords = res.data.map(issue => ({
         ...issue,
-        lat: issue.lat || 40.7128 + (Math.random() - 0.5) * 0.05,
-        lng: issue.lng || -74.006 + (Math.random() - 0.5) * 0.05,
+        lat: issue.lat || 28.6139 + (Math.random() - 0.5) * 0.1,
+        lng: issue.lng || 77.2090 + (Math.random() - 0.5) * 0.1,
       }));
       setIssues(withCoords);
     } catch (err) {
@@ -71,7 +71,7 @@ const MapView = () => {
     return (
       <div className="loader-overlay">
         <div className="loader-spinner" />
-        <p style={{ color: 'var(--gray)' }}>Loading map...</p>
+        <p style={{ color: 'var(--text-muted)' }}>Loading map...</p>
       </div>
     );
   }
@@ -90,10 +90,9 @@ const MapView = () => {
           className="btn btn-sm"
           onClick={() => { fetchIssues(); addToast('Map refreshed!'); }}
           style={{
-            background: 'rgba(15, 23, 42, 0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid var(--glass-border)',
-            color: 'var(--light)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-light)',
+            color: 'var(--text-main)',
           }}
         >
           <RefreshCw size={14} /> Refresh
@@ -102,10 +101,9 @@ const MapView = () => {
           className="btn btn-sm"
           onClick={() => setShowFilters(!showFilters)}
           style={{
-            background: showFilters ? 'var(--primary)' : 'rgba(15, 23, 42, 0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid var(--glass-border)',
-            color: 'white',
+            background: showFilters ? 'var(--primary)' : 'var(--bg-card)',
+            border: '1px solid var(--border-light)',
+            color: showFilters ? 'white' : 'var(--text-main)',
           }}
         >
           <Filter size={14} /> Filters ({filtered.length})
@@ -117,15 +115,14 @@ const MapView = () => {
         <div style={{
           position: 'absolute', top: '56px', left: '16px',
           zIndex: 1000, width: '260px',
-          background: 'rgba(15, 23, 42, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid var(--glass-border)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-light)',
           borderRadius: 'var(--radius-md)',
           padding: '16px',
-          boxShadow: 'var(--shadow-xl)',
+          boxShadow: 'var(--shadow-md)',
           animation: 'slideDown 0.2s ease-out',
         }}>
-          <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--gray)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Categories
           </h4>
           {CATEGORIES.map(cat => (
@@ -133,7 +130,7 @@ const MapView = () => {
               display: 'flex', alignItems: 'center', gap: '10px',
               padding: '8px', borderRadius: '8px', cursor: 'pointer',
               fontSize: '0.85rem', marginBottom: '4px',
-              background: filters.categories.includes(cat.key) ? 'rgba(255,255,255,0.06)' : 'transparent',
+              background: filters.categories.includes(cat.key) ? 'var(--bg-secondary)' : 'transparent',
             }}>
               <input
                 type="checkbox"
@@ -145,7 +142,7 @@ const MapView = () => {
             </label>
           ))}
 
-          <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--gray)', marginBottom: '12px', marginTop: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '12px', marginTop: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Status
           </h4>
           {['pending', 'progress', 'resolved'].map(s => (
@@ -153,7 +150,7 @@ const MapView = () => {
               display: 'flex', alignItems: 'center', gap: '10px',
               padding: '8px', borderRadius: '8px', cursor: 'pointer',
               fontSize: '0.85rem', marginBottom: '4px',
-              background: filters.statuses.includes(s) ? 'rgba(255,255,255,0.06)' : 'transparent',
+              background: filters.statuses.includes(s) ? 'var(--bg-secondary)' : 'transparent',
             }}>
               <input
                 type="checkbox"
@@ -169,14 +166,14 @@ const MapView = () => {
 
       {/* Map */}
       <MapContainer
-        center={[40.7128, -74.006]}
-        zoom={13}
+        center={[28.6139, 77.2090]}
+        zoom={11}
         style={{ height: '100%', width: '100%' }}
         ref={mapRef}
       >
         <TileLayer
           attribution='&copy; OpenStreetMap'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
         {filtered.map((issue) => {
           const cat = CATEGORIES.find(c => c.key === issue.category);

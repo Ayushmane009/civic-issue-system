@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import {
   LayoutDashboard, PlusCircle, MapPin, List, Globe,
-  User, LogOut, BarChart3, Award, TrendingUp
+  User, LogOut, BarChart3, Award, TrendingUp, Building2
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -18,6 +18,8 @@ const Sidebar = () => {
     { name: 'Map View', icon: MapPin, path: '/map' },
     { name: 'My Issues', icon: List, path: '/my-issues' },
     { name: 'All Issues', icon: Globe, path: '/issues' },
+    // Admin Panel — only for admins
+    ...(user?.role === 'admin' ? [{ name: 'Admin Panel', icon: Building2, path: '/admin' }] : []),
   ];
 
   useEffect(() => {
@@ -46,16 +48,15 @@ const Sidebar = () => {
       position: 'sticky',
       top: '64px',
       overflowY: 'auto',
-      background: 'rgba(255, 255, 255, 0.03)',
-      backdropFilter: 'blur(20px)',
-      borderRight: '1px solid rgba(255, 255, 255, 0.06)',
+      background: 'var(--bg-card)',
+      borderRight: '1px solid var(--border-light)',
       display: 'flex',
       flexDirection: 'column',
     }}>
       {/* Brand Header */}
       <div style={{
         padding: '24px 20px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+        borderBottom: '1px solid var(--border-light)',
       }}>
         <div style={{
           display: 'flex',
@@ -65,8 +66,8 @@ const Sidebar = () => {
           <div style={{
             width: '44px',
             height: '44px',
-            background: 'var(--gradient-primary)',
-            borderRadius: '14px',
+            background: 'var(--primary)',
+            borderRadius: '10px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -77,10 +78,11 @@ const Sidebar = () => {
             <h2 style={{
               fontSize: '1.2rem',
               fontWeight: 800,
+              color: 'var(--text-main)'
             }}>
-              <span className="text-gradient">NAGAR-SATHI</span>
+              NAGAR-SATHI
             </h2>
-            <p style={{ fontSize: '0.75rem', color: 'var(--gray)' }}>Community First</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Community First</p>
           </div>
         </div>
       </div>
@@ -97,9 +99,9 @@ const Sidebar = () => {
                 alignItems: 'center',
                 gap: '12px',
                 padding: '11px 16px',
-                borderRadius: '14px',
-                color: isActive(item.path) ? 'white' : 'var(--gray-light)',
-                background: isActive(item.path) ? 'rgba(99, 102, 241, 0.12)' : 'transparent',
+                borderRadius: '8px',
+                color: isActive(item.path) ? 'var(--primary)' : 'var(--text-secondary)',
+                background: isActive(item.path) ? 'var(--primary-light)' : 'transparent',
                 fontWeight: isActive(item.path) ? 600 : 500,
                 fontSize: '0.9rem',
                 textDecoration: 'none',
@@ -120,7 +122,7 @@ const Sidebar = () => {
                 }} />
               )}
               <item.icon size={18} style={{
-                color: isActive(item.path) ? 'var(--primary)' : 'var(--gray)',
+                color: isActive(item.path) ? 'var(--primary)' : 'var(--text-muted)',
               }} />
               {item.name}
             </Link>
@@ -131,25 +133,26 @@ const Sidebar = () => {
       {/* Stats */}
       <div style={{
         padding: '16px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+        borderTop: '1px solid var(--border-light)',
       }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
           <div style={{
-            background: 'rgba(255, 255, 255, 0.04)',
+            background: 'var(--bg-secondary)',
             padding: '14px',
-            borderRadius: '14px',
+            borderRadius: '8px',
             textAlign: 'center',
           }}>
             <div style={{
               fontSize: '1.4rem',
               fontWeight: 800,
-            }} className="text-gradient">{stats.total}</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--gray)', marginTop: '2px' }}>Total Issues</div>
+              color: 'var(--text-main)',
+            }}>{stats.total}</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>Total Issues</div>
           </div>
           <div style={{
-            background: 'rgba(255, 255, 255, 0.04)',
+            background: 'var(--bg-secondary)',
             padding: '14px',
-            borderRadius: '14px',
+            borderRadius: '8px',
             textAlign: 'center',
           }}>
             <div style={{
@@ -157,7 +160,7 @@ const Sidebar = () => {
               fontWeight: 800,
               color: 'var(--secondary)',
             }}>{stats.resolved}</div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--gray)', marginTop: '2px' }}>Resolved</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>Resolved</div>
           </div>
         </div>
       </div>
@@ -165,23 +168,24 @@ const Sidebar = () => {
       {/* Profile Footer */}
       <div style={{
         padding: '16px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-        background: 'rgba(0, 0, 0, 0.1)',
+        borderTop: '1px solid var(--border-light)',
+        background: 'var(--bg-card)',
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
           padding: '12px',
-          background: 'rgba(255, 255, 255, 0.04)',
-          borderRadius: '14px',
+          background: 'var(--bg-secondary)',
+          borderRadius: '8px',
           marginBottom: '10px',
         }}>
           <div style={{
             width: '40px',
             height: '40px',
-            borderRadius: '12px',
-            background: 'var(--gradient-pink)',
+            borderRadius: '8px',
+            background: 'var(--primary)',
+            color: 'var(--text-inverse)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -198,14 +202,33 @@ const Sidebar = () => {
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
+              color: 'var(--text-main)'
             }}>{user?.name || 'User'}</p>
             <p style={{
               fontSize: '0.75rem',
-              color: 'var(--gray)',
+              color: 'var(--text-muted)',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
             }}>{user?.email}</p>
+            {/* Department badge for admins */}
+            {user?.role === 'admin' && user?.department_name && (
+              <div style={{
+                marginTop: '6px',
+                padding: '3px 10px',
+                borderRadius: '8px',
+                background: 'rgba(99, 102, 241, 0.12)',
+                color: 'var(--primary-light)',
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}>
+                <Building2 size={10} />
+                {user.department_name} Admin
+              </div>
+            )}
           </div>
         </div>
 
@@ -215,8 +238,8 @@ const Sidebar = () => {
             alignItems: 'center',
             gap: '10px',
             padding: '9px 14px',
-            borderRadius: '10px',
-            color: 'var(--gray-light)',
+            borderRadius: '6px',
+            color: 'var(--text-muted)',
             fontSize: '0.85rem',
             textDecoration: 'none',
             transition: 'var(--transition)',
@@ -229,8 +252,8 @@ const Sidebar = () => {
             alignItems: 'center',
             gap: '10px',
             padding: '9px 14px',
-            borderRadius: '10px',
-            color: 'var(--gray-light)',
+            borderRadius: '6px',
+            color: 'var(--text-muted)',
             fontSize: '0.85rem',
             background: 'none',
             border: 'none',

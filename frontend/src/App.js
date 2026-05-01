@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import Issues from './pages/Issues';
 import IssueDetail from './pages/IssueDetail';
 import Report from './pages/Report';
+import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
 import MapView from './pages/MapView';
 import './index.css';
@@ -26,7 +27,6 @@ const AppLayout = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-      <div className="bg-animation" />
       <Navbar />
 
       <div style={{ display: 'flex', flex: 1 }}>
@@ -57,6 +57,9 @@ const AppLayout = () => {
             } />
             <Route path="/issues/:id" element={
               <ProtectedRoute><IssueDetail /></ProtectedRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedRoute><AdminDashboard /></ProtectedRoute>
             } />
             <Route path="/report" element={
               <ProtectedRoute><Report /></ProtectedRoute>

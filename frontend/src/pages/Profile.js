@@ -50,7 +50,7 @@ const Profile = () => {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '32px 24px' }}>
       {/* Profile Card */}
-      <div className="glass-card animate-slideUp" style={{ padding: '36px', marginBottom: '24px' }}>
+      <div className="modern-card animate-slideUp" style={{ padding: '36px', marginBottom: '24px' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: '24px',
           flexWrap: 'wrap',
@@ -59,22 +59,22 @@ const Profile = () => {
           <div style={{
             width: '80px', height: '80px',
             borderRadius: '20px',
-            background: 'var(--gradient-pink)',
+            background: 'var(--primary-light)',
+            color: 'var(--primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontWeight: 800, fontSize: '1.6rem',
             flexShrink: 0,
-            boxShadow: '0 8px 20px rgba(240, 147, 251, 0.3)',
           }}>
             {user?.name?.charAt(0)?.toUpperCase() || 'U'}
           </div>
 
           <div style={{ flex: 1, minWidth: '200px' }}>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '6px' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '6px', color: 'var(--text-main)' }}>
               {user?.name || 'Ayush'}
             </h1>
             <div style={{
               display: 'flex', alignItems: 'center', gap: '6px',
-              color: 'var(--gray)', fontSize: '0.9rem',
+              color: 'var(--text-secondary)', fontSize: '0.9rem',
             }}>
               <Mail size={14} />
               {user?.email || 'No email'}
@@ -86,40 +86,43 @@ const Profile = () => {
         <div style={{
           display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px',
           marginTop: '28px', paddingTop: '24px',
-          borderTop: '1px solid var(--glass-border)',
+          borderTop: '1px solid var(--border-light)',
         }}>
           <div style={{
             textAlign: 'center', padding: '16px',
-            background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)',
+            background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border-light)'
           }}>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800 }} className="text-gradient">{stats.total}</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--gray)', marginTop: '4px' }}>Reported</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--primary)' }}>{stats.total}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>Reported</div>
           </div>
           <div style={{
             textAlign: 'center', padding: '16px',
-            background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)',
+            background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border-light)'
           }}>
             <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--warning)' }}>{stats.pending}</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--gray)', marginTop: '4px' }}>Pending</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>Pending</div>
           </div>
           <div style={{
             textAlign: 'center', padding: '16px',
-            background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-md)',
+            background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border-light)'
           }}>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--secondary)' }}>{stats.resolved}</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--gray)', marginTop: '4px' }}>Resolved</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--success)' }}>{stats.resolved}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>Resolved</div>
           </div>
         </div>
       </div>
 
       {/* My Issues */}
-      <div className="glass-card animate-slideUp" style={{ padding: '24px' }}>
+      <div className="modern-card animate-slideUp" style={{ padding: '24px' }}>
         <h2 style={{
           fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px',
           display: 'flex', alignItems: 'center', gap: '8px',
         }}>
           <FileText size={18} style={{ color: 'var(--primary)' }} />
-          My Reported Issues
+          <span style={{ color: 'var(--text-main)' }}>My Reported Issues</span>
         </h2>
 
         {loading ? (
@@ -128,7 +131,7 @@ const Profile = () => {
           </div>
         ) : issues.length === 0 ? (
           <div style={{
-            textAlign: 'center', padding: '40px 20px', color: 'var(--gray)',
+            textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted)',
           }}>
             <AlertCircle size={36} style={{ margin: '0 auto 12px', opacity: 0.4 }} />
             <p style={{ marginBottom: '16px' }}>You haven't reported any issues yet.</p>
@@ -146,20 +149,22 @@ const Profile = () => {
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   padding: '16px',
                   borderRadius: 'var(--radius-md)',
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid var(--glass-border)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-light)',
                   textDecoration: 'none', color: 'inherit',
                   transition: 'var(--transition)',
                 }}
+                className="modern-card-hover"
               >
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontWeight: 600, fontSize: '0.9rem', marginBottom: '6px',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    color: 'var(--text-main)',
                   }}>{issue.title}</div>
                   <div style={{
                     display: 'flex', alignItems: 'center', gap: '12px',
-                    fontSize: '0.75rem', color: 'var(--gray)',
+                    fontSize: '0.75rem', color: 'var(--text-muted)',
                   }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <MapPin size={11} />
@@ -177,7 +182,7 @@ const Profile = () => {
                   <span className="badge" style={getStatusBadge(issue.status)}>
                     {issue.status}
                   </span>
-                  <ChevronRight size={16} style={{ color: 'var(--gray)' }} />
+                  <ChevronRight size={16} style={{ color: 'var(--text-muted)' }} />
                 </div>
               </Link>
             ))}

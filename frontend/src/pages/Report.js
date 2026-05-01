@@ -21,6 +21,7 @@ const Report = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '', description: '', category: '', location: '',
+    lat: null, lng: null, priority: 'Medium',
   });
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -64,10 +65,20 @@ const Report = () => {
         const { latitude, longitude } = position.coords;
         const address = await reverseGeocode(latitude, longitude);
         if (address) {
-          setFormData(prev => ({ ...prev, location: address }));
+          setFormData(prev => ({ 
+            ...prev, 
+            location: address,
+            lat: latitude,
+            lng: longitude
+          }));
           addToast('Location detected successfully!', 'success');
         } else {
-          setFormData(prev => ({ ...prev, location: `${latitude.toFixed(5)}, ${longitude.toFixed(5)}` }));
+          setFormData(prev => ({ 
+            ...prev, 
+            location: `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,
+            lat: latitude,
+            lng: longitude
+          }));
           addToast('Got coordinates, but could not get address', 'info');
         }
         setLocating(false);
@@ -111,6 +122,9 @@ const Report = () => {
     data.append('description', formData.description);
     data.append('category', formData.category);
     data.append('location', formData.location);
+    data.append('priority', formData.priority);
+    if (formData.lat) data.append('lat', formData.lat);
+    if (formData.lng) data.append('lng', formData.lng);
     if (image) data.append('image', image);
 
     try {
@@ -135,15 +149,15 @@ const Report = () => {
       margin: '0 auto',
       padding: '32px 24px',
     }}>
-      <div className="glass-card animate-slideUp" style={{ padding: '36px' }}>
+      <div className="modern-card animate-slideUp" style={{ padding: '36px' }}>
         {/* Header */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           marginBottom: '32px', paddingBottom: '20px',
-          borderBottom: '1px solid var(--glass-border)',
+          borderBottom: '1px solid var(--border-light)',
         }}>
           <h2 style={{
-            fontSize: '1.5rem', fontWeight: 800,
+            fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)',
             display: 'flex', alignItems: 'center', gap: '10px',
           }}>
             <Flag size={22} style={{ color: 'var(--primary)' }} />
@@ -153,8 +167,8 @@ const Report = () => {
             onClick={() => navigate('/dashboard')}
             style={{
               width: '36px', height: '36px', borderRadius: '10px',
-              background: 'rgba(255,255,255,0.06)', border: 'none',
-              color: 'var(--gray-light)', display: 'flex',
+              background: 'var(--bg-secondary)', border: 'none',
+              color: 'var(--text-muted)', display: 'flex',
               alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', transition: 'var(--transition)',
             }}
@@ -168,7 +182,7 @@ const Report = () => {
           <div style={{ marginBottom: '24px' }}>
             <label style={{
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
-              color: 'var(--gray-light)', marginBottom: '12px',
+              color: 'var(--text-secondary)', marginBottom: '12px',
             }}>Select Category</label>
             <div style={{
               display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px',
@@ -181,7 +195,7 @@ const Report = () => {
                   style={{
                     padding: '20px',
                     borderRadius: 'var(--radius-md)',
-                    border: `2px solid ${formData.category === cat.value ? cat.color : 'var(--glass-border)'}`,
+                    border: `2px solid ${formData.category === cat.value ? cat.color : 'var(--border-light)'}`,
                     background: formData.category === cat.value ? `${cat.color}15` : 'transparent',
                     cursor: 'pointer',
                     textAlign: 'center',
@@ -200,7 +214,7 @@ const Report = () => {
           <div style={{ marginBottom: '20px' }}>
             <label style={{
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
-              color: 'var(--gray-light)', marginBottom: '8px',
+              color: 'var(--text-secondary)', marginBottom: '8px',
             }}>Issue Title</label>
             <input
               type="text"
@@ -208,7 +222,7 @@ const Report = () => {
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g., Pothole on Main Street"
-              className="input-dark"
+              className="input-modern"
             />
           </div>
 
@@ -216,7 +230,7 @@ const Report = () => {
           <div style={{ marginBottom: '20px' }}>
             <label style={{
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
-              color: 'var(--gray-light)', marginBottom: '8px',
+              color: 'var(--text-secondary)', marginBottom: '8px',
             }}>Description</label>
             <textarea
               rows="4"
@@ -224,29 +238,56 @@ const Report = () => {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe the issue in detail..."
-              className="input-dark"
+              className="input-modern"
               style={{ resize: 'vertical', minHeight: '100px' }}
             />
+          </div>
+
+          {/* Priority */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'block', fontSize: '0.85rem', fontWeight: 600,
+              color: 'var(--text-secondary)', marginBottom: '8px',
+            }}>Priority Level</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {['Low', 'Medium', 'High', 'Urgent'].map(p => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, priority: p })}
+                  style={{
+                    flex: 1, padding: '10px', borderRadius: 'var(--radius-md)',
+                    border: `1px solid ${formData.priority === p ? 'var(--primary)' : 'var(--border-light)'}`,
+                    background: formData.priority === p ? 'var(--primary-light)' : 'transparent',
+                    color: formData.priority === p ? 'var(--primary)' : 'var(--text-secondary)',
+                    fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
+                    transition: 'var(--transition)',
+                  }}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Location */}
           <div style={{ marginBottom: '20px' }}>
             <label style={{
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
-              color: 'var(--gray-light)', marginBottom: '8px',
+              color: 'var(--text-secondary)', marginBottom: '8px',
             }}>Location</label>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'stretch' }}>
               <div style={{ position: 'relative', flex: 1 }}>
                 <MapPin size={16} style={{
                   position: 'absolute', left: '14px', top: '50%',
-                  transform: 'translateY(-50%)', color: 'var(--gray)',
+                  transform: 'translateY(-50%)', color: 'var(--text-muted)',
                 }} />
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder={locating ? 'Detecting your location...' : 'e.g., Main Street intersection'}
-                  className="input-dark"
+                  className="input-modern"
                   style={{ paddingLeft: '42px' }}
                 />
               </div>
@@ -262,11 +303,11 @@ const Report = () => {
                   gap: '6px',
                   padding: '0 16px',
                   background: locating
-                    ? 'rgba(99, 102, 241, 0.15)'
-                    : 'rgba(99, 102, 241, 0.1)',
-                  border: '1px solid rgba(99, 102, 241, 0.3)',
+                    ? 'var(--primary-light)'
+                    : 'var(--bg-secondary)',
+                  border: '1px solid var(--border-light)',
                   borderRadius: 'var(--radius-md)',
-                  color: 'var(--primary-light)',
+                  color: 'var(--primary)',
                   cursor: locating ? 'not-allowed' : 'pointer',
                   transition: 'var(--transition)',
                   fontSize: '0.8rem',
@@ -289,12 +330,12 @@ const Report = () => {
           <div style={{ marginBottom: '28px' }}>
             <label style={{
               display: 'block', fontSize: '0.85rem', fontWeight: 600,
-              color: 'var(--gray-light)', marginBottom: '8px',
+              color: 'var(--text-secondary)', marginBottom: '8px',
             }}>Photo (optional)</label>
             <label style={{
               display: 'block',
               padding: '24px',
-              border: '2px dashed var(--glass-border)',
+              border: '2px dashed var(--border-light)',
               borderRadius: 'var(--radius-md)',
               textAlign: 'center',
               cursor: 'pointer',
@@ -311,16 +352,16 @@ const Report = () => {
                       margin: '0 auto 12px', objectFit: 'cover',
                     }}
                   />
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: 'var(--secondary)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: 'var(--success)' }}>
                     <Check size={16} />
                     <span style={{ fontSize: '0.85rem' }}>{image.name}</span>
                   </div>
                 </>
               ) : (
                 <>
-                  <Camera size={28} style={{ color: 'var(--gray)', margin: '0 auto 10px', display: 'block' }} />
-                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>Click to upload photo</div>
-                  <small style={{ color: 'var(--gray)', fontSize: '0.8rem' }}>JPG, PNG up to 10MB</small>
+                  <Camera size={28} style={{ color: 'var(--text-muted)', margin: '0 auto 10px', display: 'block' }} />
+                  <div style={{ fontWeight: 500, marginBottom: '4px', color: 'var(--text-main)' }}>Click to upload photo</div>
+                  <small style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>JPG, PNG up to 10MB</small>
                 </>
               )}
               <input
